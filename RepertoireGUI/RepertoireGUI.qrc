@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="RepertoireGUI">
+    <file>musicnotes.jpg</file>
+  </qresource>
+</RCC>

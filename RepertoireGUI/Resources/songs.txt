@@ -1,0 +1,3 @@
+22 serialization::archive 15 0 0 1 1 0 1 3 6 Guitar 1 0
+0 1 0
+1 2017 0 0 5 Lauro 7 Antonio 7 El Nino 0 0 225 4 3:45 0 0 0 0 0 0 0
