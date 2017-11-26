@@ -44,7 +44,7 @@ public:
     QLabel *labelSongSize;
     QSpacerItem *horizontalSpacer_2;
     QFrame *line;
-    QWidget *widget;
+    QWidget *layoutWidget1;
     QHBoxLayout *horizontalLayout_3;
     QVBoxLayout *verticalLayout_10;
     QGridLayout *gridLayout;
@@ -166,10 +166,10 @@ public:
         line->setFrameShadow(QFrame::Raised);
         line->setLineWidth(4);
         line->setFrameShape(QFrame::HLine);
-        widget = new QWidget(RepertoireGUIClass);
-        widget->setObjectName(QStringLiteral("widget"));
-        widget->setGeometry(QRect(100, 470, 861, 101));
-        horizontalLayout_3 = new QHBoxLayout(widget);
+        layoutWidget1 = new QWidget(RepertoireGUIClass);
+        layoutWidget1->setObjectName(QStringLiteral("layoutWidget1"));
+        layoutWidget1->setGeometry(QRect(100, 470, 861, 101));
+        horizontalLayout_3 = new QHBoxLayout(layoutWidget1);
         horizontalLayout_3->setSpacing(6);
         horizontalLayout_3->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
@@ -183,12 +183,12 @@ public:
         verticalLayout_8 = new QVBoxLayout();
         verticalLayout_8->setSpacing(6);
         verticalLayout_8->setObjectName(QStringLiteral("verticalLayout_8"));
-        labelCompoition = new QLabel(widget);
+        labelCompoition = new QLabel(layoutWidget1);
         labelCompoition->setObjectName(QStringLiteral("labelCompoition"));
 
         verticalLayout_8->addWidget(labelCompoition);
 
-        textEditComposition = new QTextEdit(widget);
+        textEditComposition = new QTextEdit(layoutWidget1);
         textEditComposition->setObjectName(QStringLiteral("textEditComposition"));
         QFont font2;
         font2.setPointSize(9);
@@ -202,12 +202,12 @@ public:
         verticalLayout_9 = new QVBoxLayout();
         verticalLayout_9->setSpacing(6);
         verticalLayout_9->setObjectName(QStringLiteral("verticalLayout_9"));
-        labelYear = new QLabel(widget);
+        labelYear = new QLabel(layoutWidget1);
         labelYear->setObjectName(QStringLiteral("labelYear"));
 
         verticalLayout_9->addWidget(labelYear);
 
-        spinBoxYear = new QSpinBox(widget);
+        spinBoxYear = new QSpinBox(layoutWidget1);
         spinBoxYear->setObjectName(QStringLiteral("spinBoxYear"));
         QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Minimum);
         sizePolicy1.setHorizontalStretch(0);
@@ -231,12 +231,12 @@ public:
         verticalLayout_7 = new QVBoxLayout();
         verticalLayout_7->setSpacing(6);
         verticalLayout_7->setObjectName(QStringLiteral("verticalLayout_7"));
-        labelComposer = new QLabel(widget);
+        labelComposer = new QLabel(layoutWidget1);
         labelComposer->setObjectName(QStringLiteral("labelComposer"));
 
         verticalLayout_7->addWidget(labelComposer);
 
-        textEditComposer = new QTextEdit(widget);
+        textEditComposer = new QTextEdit(layoutWidget1);
         textEditComposer->setObjectName(QStringLiteral("textEditComposer"));
         textEditComposer->setFont(font2);
 
@@ -248,12 +248,12 @@ public:
         verticalLayout_12 = new QVBoxLayout();
         verticalLayout_12->setSpacing(6);
         verticalLayout_12->setObjectName(QStringLiteral("verticalLayout_12"));
-        labelDuration = new QLabel(widget);
+        labelDuration = new QLabel(layoutWidget1);
         labelDuration->setObjectName(QStringLiteral("labelDuration"));
 
         verticalLayout_12->addWidget(labelDuration);
 
-        timeEditDuration = new QTimeEdit(widget);
+        timeEditDuration = new QTimeEdit(layoutWidget1);
         timeEditDuration->setObjectName(QStringLiteral("timeEditDuration"));
         timeEditDuration->setMinimumSize(QSize(89, 26));
         timeEditDuration->setFont(font3);
@@ -277,13 +277,13 @@ public:
         verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
-        labelInstrument = new QLabel(widget);
+        labelInstrument = new QLabel(layoutWidget1);
         labelInstrument->setObjectName(QStringLiteral("labelInstrument"));
         labelInstrument->setAlignment(Qt::AlignCenter);
 
         verticalLayout_2->addWidget(labelInstrument);
 
-        boxInstrument = new QComboBox(widget);
+        boxInstrument = new QComboBox(layoutWidget1);
         boxInstrument->setObjectName(QStringLiteral("boxInstrument"));
 
         verticalLayout_2->addWidget(boxInstrument);
@@ -294,13 +294,13 @@ public:
         verticalLayout_3 = new QVBoxLayout();
         verticalLayout_3->setSpacing(6);
         verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        labelInstrumentation = new QLabel(widget);
+        labelInstrumentation = new QLabel(layoutWidget1);
         labelInstrumentation->setObjectName(QStringLiteral("labelInstrumentation"));
         labelInstrumentation->setAlignment(Qt::AlignCenter);
 
         verticalLayout_3->addWidget(labelInstrumentation);
 
-        boxInstrumentation = new QComboBox(widget);
+        boxInstrumentation = new QComboBox(layoutWidget1);
         boxInstrumentation->setObjectName(QStringLiteral("boxInstrumentation"));
 
         verticalLayout_3->addWidget(boxInstrumentation);
@@ -311,13 +311,13 @@ public:
         verticalLayout_4 = new QVBoxLayout();
         verticalLayout_4->setSpacing(6);
         verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
-        labelGenre = new QLabel(widget);
+        labelGenre = new QLabel(layoutWidget1);
         labelGenre->setObjectName(QStringLiteral("labelGenre"));
         labelGenre->setAlignment(Qt::AlignCenter);
 
         verticalLayout_4->addWidget(labelGenre);
 
-        boxGenre = new QComboBox(widget);
+        boxGenre = new QComboBox(layoutWidget1);
         boxGenre->setObjectName(QStringLiteral("boxGenre"));
 
         verticalLayout_4->addWidget(boxGenre);
@@ -328,13 +328,13 @@ public:
         verticalLayout_5 = new QVBoxLayout();
         verticalLayout_5->setSpacing(6);
         verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
-        labelGuitarTune = new QLabel(widget);
+        labelGuitarTune = new QLabel(layoutWidget1);
         labelGuitarTune->setObjectName(QStringLiteral("labelGuitarTune"));
         labelGuitarTune->setAlignment(Qt::AlignCenter);
 
         verticalLayout_5->addWidget(labelGuitarTune);
 
-        boxGuitarTuning = new QComboBox(widget);
+        boxGuitarTuning = new QComboBox(layoutWidget1);
         boxGuitarTuning->setObjectName(QStringLiteral("boxGuitarTuning"));
 
         verticalLayout_5->addWidget(boxGuitarTuning);
@@ -345,13 +345,13 @@ public:
         verticalLayout_6 = new QVBoxLayout();
         verticalLayout_6->setSpacing(6);
         verticalLayout_6->setObjectName(QStringLiteral("verticalLayout_6"));
-        labelGuitarCapo = new QLabel(widget);
+        labelGuitarCapo = new QLabel(layoutWidget1);
         labelGuitarCapo->setObjectName(QStringLiteral("labelGuitarCapo"));
         labelGuitarCapo->setAlignment(Qt::AlignCenter);
 
         verticalLayout_6->addWidget(labelGuitarCapo);
 
-        boxGuitarCapo = new QComboBox(widget);
+        boxGuitarCapo = new QComboBox(layoutWidget1);
         boxGuitarCapo->setObjectName(QStringLiteral("boxGuitarCapo"));
 
         verticalLayout_6->addWidget(boxGuitarCapo);
@@ -368,7 +368,7 @@ public:
         verticalLayout_11 = new QVBoxLayout();
         verticalLayout_11->setSpacing(6);
         verticalLayout_11->setObjectName(QStringLiteral("verticalLayout_11"));
-        buttonAdd = new QPushButton(widget);
+        buttonAdd = new QPushButton(layoutWidget1);
         buttonAdd->setObjectName(QStringLiteral("buttonAdd"));
         buttonAdd->setMinimumSize(QSize(101, 41));
         QFont font4;
@@ -383,7 +383,7 @@ public:
 
         verticalLayout_11->addItem(verticalSpacer_2);
 
-        buttonSave = new QPushButton(widget);
+        buttonSave = new QPushButton(layoutWidget1);
         buttonSave->setObjectName(QStringLiteral("buttonSave"));
         buttonSave->setMinimumSize(QSize(101, 41));
         buttonSave->setFont(font4);
@@ -409,7 +409,7 @@ public:
         labelCompoition->setText(QApplication::translate("RepertoireGUIClass", "Composition", Q_NULLPTR));
         labelYear->setText(QApplication::translate("RepertoireGUIClass", "Year", Q_NULLPTR));
         labelComposer->setText(QApplication::translate("RepertoireGUIClass", "Composer", Q_NULLPTR));
-        labelDuration->setText(QApplication::translate("RepertoireGUIClass", "TextLabel", Q_NULLPTR));
+        labelDuration->setText(QApplication::translate("RepertoireGUIClass", "Duration", Q_NULLPTR));
         timeEditDuration->setDisplayFormat(QApplication::translate("RepertoireGUIClass", "mm:ss", Q_NULLPTR));
         labelInstrument->setText(QApplication::translate("RepertoireGUIClass", "Instrument", Q_NULLPTR));
         labelInstrumentation->setText(QApplication::translate("RepertoireGUIClass", "Instrumentation", Q_NULLPTR));
