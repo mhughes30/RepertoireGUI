@@ -3,6 +3,8 @@
 #include <QtWidgets/QWidget>
 #include "ui_RepertoireGUI.h"
 
+#include "RepertoireManager.h"
+
 class RepertoireGUI : public QWidget
 {
 	Q_OBJECT
@@ -17,9 +19,22 @@ private:
 
 	size_t m_numTableColumns = 0;				// number of columns in the table
 	size_t m_numTableRows    = INIT_ROW_SIZE;	// number of rows in the table
+	size_t m_theEndColumn;
 	
 	// columns used to populate the table widget
-	QStringList m_songColumns;
+	std::map<SONG_CAT, int> m_headingIdx
+	{  
+		{ SONG_CAT::COMPOSER,	 0 },
+		{ SONG_CAT::TITLE,		 1 },
+		{ SONG_CAT::INSTRUMENT,  2 },
+		{ SONG_CAT::DURATION,	 3 },
+		{ SONG_CAT::YEAR,		 4 },
+		{ SONG_CAT::INSTR_TYPE,  5 },
+		{ SONG_CAT::GENRE,		 6 },
+		{ SONG_CAT::GUITAR_CAPO, 7 },
+		{ SONG_CAT::GUITAR_TUNE, 8 },
+		{ SONG_CAT::MAX,		 9 }		
+	};
 
 	// tracks songs to be deleted upon SAVE
 	std::vector<int> m_songIndexToDelete;
@@ -40,7 +55,7 @@ private:
 	//-- reads the archived table, and loads it into the table view
 	void CheckRepertoire();
 	//-- writes 1 row of data to the tavle view
-	void WriteDataToRow(std::vector<QString>& data);
+	void WriteDataToRow(std::map<SONG_CAT, std::string>& songData);
 	//-- saves the repertoire to a human-readable file
 	void SaveFormattedRepertoireToFile(void);
 

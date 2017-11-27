@@ -7,8 +7,6 @@
 #include <qtextstream.h>
 #include <qdebug.h>
 
-#include "RepertoireManager.h"
-
 
 //--------------- PopulateComboBox ----------------//
 template<typename key>
@@ -41,26 +39,26 @@ void RepertoireGUI::AdjustTableRowCount(bool doIncrement)
 //--------------- BuildSongTableColumns ----------------//
 void RepertoireGUI::BuildSongTableColumns(void)
 {
-	//--- create labels	
-	m_songColumns.append("Composer");	
-	m_songColumns.append("Title");
-	m_songColumns.append("Instrument");
-	m_songColumns.append("Duration");
-	m_songColumns.append("Year");
-	m_songColumns.append("Type");
-	m_songColumns.append("Genre");
-	m_songColumns.append("Capo");
-	m_songColumns.append("Tuning");
-	m_songColumns.append("idx");
+	RepertoireManager* repMgr = RepertoireManager::GetInstance();
+	repMgr->ReadRepertoireFromDisk();
 
-	m_numTableColumns = m_songColumns.size();
+	//--- create labels	 in the order desired for the table widget
+	QStringList songColumns;
+	auto headingIter = m_headingIdx.cbegin();
+	for (; headingIter != m_headingIdx.cend(); ++headingIter)
+	{
+		songColumns.append( repMgr->GetHeadingLabel(headingIter->first).c_str() );
+	}
+
+	m_numTableColumns = songColumns.size();
+	m_theEndColumn    = m_numTableColumns - 1;
 
 	ui.songTableWidget->setColumnCount(m_numTableColumns);
-	ui.songTableWidget->setHorizontalHeaderLabels(m_songColumns);
+	ui.songTableWidget->setHorizontalHeaderLabels(songColumns);
 
 	// hide the index column
 	bool hideIndexColumn = true;
-	ui.songTableWidget->setColumnHidden(m_numTableColumns - 1, hideIndexColumn);
+	ui.songTableWidget->setColumnHidden(m_theEndColumn, hideIndexColumn);
 		
 	ui.songTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	ui.songTableWidget->horizontalHeader()->show();
@@ -155,7 +153,10 @@ RepertoireGUI::RepertoireGUI( QWidget *parent )
 //- Reads the repertoire at startup and populates the table with any songs
 void RepertoireGUI::CheckRepertoire()
 {
-	static std::vector<QString> rowVec(m_numTableColumns);
+	// static data to store the current song data for populating the table
+	static std::map<SONG_CAT, std::string> songData;
+
+	//static std::vector<QString> rowVec(m_numTableColumns);
 	RepertoireManager* repMgr = RepertoireManager::GetInstance();
 	repMgr->ReadRepertoireFromDisk();
 	auto songItr = repMgr->cbegin();
@@ -164,42 +165,30 @@ void RepertoireGUI::CheckRepertoire()
 	SetSongSize(repMgr->GetRepertoireSize());
 
 	for (; songItr != songEnd; ++songItr)
-	{
-		ISong* song = songItr->get();
-		Guitar* curSong = static_cast<Guitar*>(song);
-		// composer
-		Human hum;
-		curSong->GetComposer(hum);
-		rowVec[0] = hum.GetName(Human::NAME::FULL).c_str();
-		// Title
-		rowVec[1] = curSong->GetTitle().c_str();
-		// Instrument
-		rowVec[2] = EnumToStr::getStrFromInstrument.at(curSong->GetInstrument()).c_str();
-		// Duration
-		Duration dur;
-		curSong->GetDuration(dur);
-		rowVec[3] = dur.GetMinSecStr().c_str();
-		// year
-		rowVec[4] = QString::number( curSong->GetYear() );
-		// Instrumentation Type
-		rowVec[5] = EnumToStr::getStrFromInstrumentation.at(curSong->GetInstrumentation()).c_str();
-		// genre
-		rowVec[6] = EnumToStr::getStrFromGenre.at(curSong->GetGenre()).c_str();
-		// capo and tuning
-		GuitarConfig gc;
-		curSong->GetGuitarConfig(gc);
-		rowVec[7] = EnumToStr::getStrFromCapo.at(gc.GetCapoFret()).c_str();
-		rowVec[8] = EnumToStr::getStrFromTuning.at(gc.GetTuning()).c_str();
-		
-		WriteDataToRow(rowVec);
+	{		
+		repMgr->ExtractSongRecord(*songItr, songData);	
+		WriteDataToRow(songData);
 	}
 }
 
+
 //--------------- WriteDataToRow ----------------//
-void RepertoireGUI::WriteDataToRow(std::vector<QString>& data)
+void RepertoireGUI::WriteDataToRow(std::map<SONG_CAT, std::string>& songData)
 {
+	static std::vector<QString> dataVec(m_numTableColumns);
+	
+	//--- prepare all data for being written to the table row
+	auto songIter = songData.cbegin();
+	for (; songIter != songData.cend(); ++songIter)
+	{
+		SONG_CAT key = songIter->first;
+		QString data = songIter->second.c_str();
+		int colIndex = m_headingIdx.at(key);
+		dataVec[colIndex] = data;
+	}
+
 	//--- update the song position index
-	data[m_numTableColumns-1] = QString::number(m_numTableRows);
+	dataVec[m_headingIdx.at(SONG_CAT::MAX)] = QString::number(m_numTableRows);
 
 	//--- indicate another row has been added
 	AdjustTableRowCount(true);
@@ -208,10 +197,10 @@ void RepertoireGUI::WriteDataToRow(std::vector<QString>& data)
 	for (int colIdx = 0; colIdx < m_numTableColumns; ++colIdx)
 	{
 		QTableWidgetItem* item = new QTableWidgetItem();
-		item->setText(data[colIdx]);
+		item->setText(dataVec[colIdx]);
 		// make the data not editable
 		item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-		ui.songTableWidget->setItem(m_numTableRows-1, colIdx, item);		
+		ui.songTableWidget->setItem(m_numTableRows - 1, colIdx, item);
 	}
 }
 
@@ -228,7 +217,7 @@ void RepertoireGUI::on_buttonDelete_clicked()
 	int rowRemoved = ui.songTableWidget->currentRow();
 
 	//-- add to the list of songs to be removed
-	QTableWidgetItem* item = ui.songTableWidget->item(rowRemoved, m_numTableColumns - 1);
+	QTableWidgetItem* item = ui.songTableWidget->item(rowRemoved, m_theEndColumn);
 	int songIdx = item->text().toInt();
 
 	// only add the index of the song to be edited, if it has not already been added
@@ -278,7 +267,8 @@ void RepertoireGUI::on_buttonSave_clicked()
 //--------------- on_addsongButton_clicked ----------------//
 void RepertoireGUI::on_buttonAdd_clicked()
 {
-	static std::vector<QString> dispVec(m_numTableColumns);
+	// static data to store the current song data for populating the table
+	static std::map<SONG_CAT, std::string> songData;
 
 	//--- Get the composer and composition
 	QString composer	= ui.textEditComposer->toPlainText();
@@ -305,20 +295,21 @@ void RepertoireGUI::on_buttonAdd_clicked()
 	//--- Get the Duration
 	QTime time = ui.timeEditDuration->time();
 	uint16_t duration = static_cast<uint16_t>( 60*time.minute() + time.second() );
+	
+	//--- populate the data in the data table
+	songData[SONG_CAT::COMPOSER]    = composer.toStdString();
+	songData[SONG_CAT::TITLE]	    = composition.toStdString();
+	songData[SONG_CAT::INSTRUMENT]  = std::get<1>(instTypeT).toStdString();
+	songData[SONG_CAT::DURATION]    = time.toString().toStdString();
+	songData[SONG_CAT::YEAR]	    = QString::number(year).toStdString();
+	songData[SONG_CAT::INSTR_TYPE]  = std::get<1>(instTypeT).toStdString();
+	songData[SONG_CAT::GENRE]	    = std::get<1>(genreT).toStdString();
+	songData[SONG_CAT::GUITAR_CAPO] = std::get<1>(guitarCapoT).toStdString();
+	songData[SONG_CAT::GUITAR_TUNE] = std::get<1>(guitarTuningT).toStdString();
 
-	//--- Populate the Row in the Table
-	dispVec[0] = composer;
-	dispVec[1] = composition;
-	dispVec[2] = std::get<1>(instrumentT);
-	dispVec[3] = time.toString();
-	dispVec[4] = QString::number(year); 
-	dispVec[5] = std::get<1>(instTypeT);
-	dispVec[6] = std::get<1>(genreT);
-	dispVec[7] = std::get<1>(guitarCapoT);
-	dispVec[8] = std::get<1>(guitarTuningT);
+	WriteDataToRow(songData);
 
-	WriteDataToRow(dispVec);
-
+	// TODO_Mike - move this logic into the repertoireManager
 	//-- add data to archive
 	RepertoireManager* repMgr = RepertoireManager::GetInstance();
 	Guitar gc;
@@ -344,6 +335,7 @@ void RepertoireGUI::on_buttonAdd_clicked()
 	gc.SetTitle(composition.toStdString());
 	// year
 	gc.SetYear(year);
+
 	repMgr->AppendSong(gc);
 }
 
