@@ -7,6 +7,8 @@
 #include <qtextstream.h>
 #include <qdebug.h>
 
+#include <future>	// for async usage of writing to file
+
 
 //--------------- PopulateComboBox ----------------//
 template<typename key>
@@ -33,7 +35,7 @@ void RepertoireGUI::AdjustTableRowCount(bool doIncrement)
 		ui.songTableWidget->setRowCount(--m_numTableRows);
 	}
 
-	SetSongSize(m_numTableRows);
+	SetNumSongs(m_numTableRows);
 }
 
 //--------------- BuildSongTableColumns ----------------//
@@ -87,8 +89,8 @@ void RepertoireGUI::SetLabelFont(QLabel* label, uint8_t fontSize, bool isBold, b
 	label->setAlignment(Qt::AlignCenter);
 }
 
-//--------------- SetSongSize ----------------//
-void RepertoireGUI::SetSongSize(size_t numSongs)
+//--------------- SetNumSongs ----------------//
+void RepertoireGUI::SetNumSongs(size_t numSongs)
 {
 	const QString prefix = "Repertoire Size: ";
 
@@ -162,7 +164,7 @@ void RepertoireGUI::CheckRepertoire()
 	auto songItr = repMgr->cbegin();
 	auto songEnd = repMgr->cend();
 
-	SetSongSize(repMgr->GetRepertoireSize());
+	SetNumSongs(repMgr->GetRepertoireSize());
 
 	for (; songItr != songEnd; ++songItr)
 	{		
@@ -260,8 +262,8 @@ void RepertoireGUI::on_buttonSave_clicked()
 		repMgr->EraseSong(idx);
 	}
 
-	//-- write the data		
-	repMgr->WriteRepertoireToDisk();	
+	//-- write the data	with an asynchronous task
+	auto futureSuccess = std::async(std::launch::async, &RepertoireManager::WriteRepertoireToDisk, repMgr );
 }
 
 //--------------- on_addsongButton_clicked ----------------//
@@ -342,18 +344,20 @@ void RepertoireGUI::on_buttonAdd_clicked()
 //--------------- on_buttonSaveToFile_clicked ----------------//
 void RepertoireGUI::on_buttonSaveToFile_clicked()
 {
-	SaveFormattedRepertoireToFile();
+	//-- write to a file with an asynchronous task
+	auto futureSuccess = std::async( std::launch::async, &RepertoireGUI::SaveFormattedRepertoireToFile, this );
 }
 
 //--------------- SaveFormattedRepertoireToFile ----------------//
-void RepertoireGUI::SaveFormattedRepertoireToFile(void)
+// returns true for succes; false for no success
+bool RepertoireGUI::SaveFormattedRepertoireToFile(void)
 {
 	// TODO - finish
 	QFile file("Repertoire.txt");
 	if ( !file.open(QFile::WriteOnly | QFile::Text) )
 	{
 		qDebug() << " Could not open file.";
-		return;
+		return false;
 	}
 
 	QTextStream ots(&file);
@@ -366,5 +370,7 @@ void RepertoireGUI::SaveFormattedRepertoireToFile(void)
 	}
 	ots << strList.join(";");
 	file.close();
+
+	return true;
 }
 

@@ -86,8 +86,8 @@ public:
     {
         if (RepertoireGUIClass->objectName().isEmpty())
             RepertoireGUIClass->setObjectName(QStringLiteral("RepertoireGUIClass"));
-        RepertoireGUIClass->resize(1068, 624);
-        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        RepertoireGUIClass->resize(1063, 621);
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(RepertoireGUIClass->sizePolicy().hasHeightForWidth());

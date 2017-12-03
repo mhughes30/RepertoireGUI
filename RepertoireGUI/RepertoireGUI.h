@@ -47,7 +47,7 @@ private:
 	//-- formats fonts for all labels
 	void SetLabelFont(QLabel* label, uint8_t fontSize, bool isBold, bool isUnderline);
 	//-- sets the repertoire size field
-	void SetSongSize(size_t numSongs);
+	void SetNumSongs(size_t numSongs);
 	//-- sets up the year-box
 	void ConfigYearBox(void);
 	//-- increments/decrements the # of rows in the table
@@ -57,7 +57,7 @@ private:
 	//-- writes 1 row of data to the tavle view
 	void WriteDataToRow(std::map<SONG_CAT, std::string>& songData);
 	//-- saves the repertoire to a human-readable file
-	void SaveFormattedRepertoireToFile(void);
+	bool SaveFormattedRepertoireToFile(void);
 
 private slots:
 	void on_buttonAdd_clicked();
