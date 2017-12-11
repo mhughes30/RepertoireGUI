@@ -42,6 +42,8 @@ private:
 	//-- populates all the combo boxes for selecting a song
 	template<typename key>
 	void PopulateComboBox(QComboBox* cb, const std::map<key, std::string>& cbStr);
+	//-- creates all of the tool tips
+	void SetTooltips(void);
 	//-- builds the column names in the table view 
 	void BuildSongTableColumns(void);
 	//-- formats fonts for all labels

@@ -1,13 +1,15 @@
 
 #include "RepertoireGUI.h"
 #include "ui_RepertoireGUI.h"
-#include <ctime>
 #include <qmessagebox.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdebug.h>
-
 #include <future>	// for async usage of writing to file
+
+#include "SetBuilder.h"
+#include "TimeHelper.h"
+
 
 
 //--------------- PopulateComboBox ----------------//
@@ -100,14 +102,11 @@ void RepertoireGUI::SetNumSongs(size_t numSongs)
 
 //--------------- ConfigYearBox ----------------//
 void RepertoireGUI::ConfigYearBox(void)
-{
-	const int TIME_BASIS_YEAR = 1900;	// ctime starts from 1900
-	int minYear = 1000;					// hardcode to 1000 AD
+{	
+	int minYear = 1000;		// hardcode to 1000 AD
 
 	// Grab the current year for the maxYear
-	time_t curTime = time(NULL);
-	struct tm* tmTime = localtime(&curTime);
-	int maxYear = tmTime->tm_year + TIME_BASIS_YEAR;
+	int maxYear = TimeHelper::GetDate(TimeHelper::TYPE::YEAR);
 
 	ui.spinBoxYear->setRange(minYear, maxYear);
 	ui.spinBoxYear->setSingleStep(1);
@@ -144,12 +143,28 @@ RepertoireGUI::RepertoireGUI( QWidget *parent )
 	SetLabelFont(ui.labelYear,			  10, true, false);
 	SetLabelFont(ui.labelDuration,		  10, true, false);
 
+	//--- configure the UI tool tips
+	SetTooltips();
+
+	//ui.buttonSaveToFile->setStyleSheet(QString::fromUtf8("background-color: rgb(255, 255, 0);"));
+
 	//--- ConfigYearBox
 	ConfigYearBox();
 
 	//--- read in repertoire if it exists
 	CheckRepertoire();
 }
+
+
+//--------------- SetTooltips ----------------//
+void RepertoireGUI::SetTooltips(void)
+{
+	ui.buttonSave->setToolTip("Saves the entire repertoire to disk.");
+	ui.buttonSaveToFile->setToolTip("Saves a SET LIST to HTML.");
+	ui.buttonAdd->setToolTip("Add the song to the repertoire; temporary until SAVE LIST is pressed.");
+	ui.buttonDelete->setToolTip("Deletes the selected song; temporary until SAVE LIST is pressed"); 
+}
+
 
 //--------------- CheckRepertoire ----------------//
 //- Reads the repertoire at startup and populates the table with any songs
@@ -352,6 +367,27 @@ void RepertoireGUI::on_buttonSaveToFile_clicked()
 // returns true for succes; false for no success
 bool RepertoireGUI::SaveFormattedRepertoireToFile(void)
 {
+	//--- Make a new FileName
+	const std::string baseName	= ".\\Lists\\set-list";
+	const std::string ext		= ".html";
+
+	auto timeTuple = TimeHelper::GetYearMonthDay();
+
+	std::string year  = std::get<static_cast<int>(TimeHelper::TYPE::YEAR)>(timeTuple);
+	std::string month = std::get<static_cast<int>(TimeHelper::TYPE::MONTH)>(timeTuple);
+	std::string day   = std::get<static_cast<int>(TimeHelper::TYPE::DAY)>(timeTuple);
+
+	std::string fileName = baseName + "_" + year + "-" + month + "-" + day + ext;
+
+	//--- Create the set list
+	SetListBuilder<FullSet> setBuilder(60);	// use a dummy value in this case
+	setBuilder.BuildSetList();
+
+	//--- Write the Set to a file
+	SetListHtmlWriter fileWriter(fileName);
+	fileWriter.WriteSetListToHtml(setBuilder.cbegin(), setBuilder.cend(), setBuilder.GetTotalDuration());
+
+	/*
 	// TODO - finish
 	QFile file("Repertoire.txt");
 	if ( !file.open(QFile::WriteOnly | QFile::Text) )
@@ -370,6 +406,7 @@ bool RepertoireGUI::SaveFormattedRepertoireToFile(void)
 	}
 	ots << strList.join(";");
 	file.close();
+	*/
 
 	return true;
 }
